@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Для тебя ✨</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #05060f;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 100%, rgba(60, 40, 120, 0.35) 0%, transparent 60%),
+      radial-gradient(ellipse at 20% 20%, rgba(30, 60, 120, 0.25) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 30%, rgba(90, 40, 110, 0.20) 0%, transparent 55%),
+      linear-gradient(to bottom, #02030a 0%, #070a1f 40%, #0b0a24 70%, #120a26 100%);
+    z-index: 0;
+  }
+
+  .moon-glow {
+    position: fixed;
+    top: 12%;
+    right: 10%;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center,
+      rgba(255, 245, 220, 0.9) 0%,
+      rgba(255, 240, 200, 0.35) 25%,
+      rgba(200, 180, 255, 0.10) 50%,
+      transparent 70%);
+    filter: blur(6px);
+    z-index: 1;
+    opacity: 0.9;
+    animation: moonPulse 6s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes moonPulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.06); }
+  }
+
+  #stars {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    display: block;
+    opacity: 1;
+  }
+
+  .darkness {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, #070b25 0%, #02040e 70%, #000000 100%);
+    opacity: 0;
+    z-index: 3;
+    pointer-events: none;
+    transition: opacity 5s ease;
+  }
+  .darkness.on { opacity: 1; }
+
+  /* ==================== КНОПКИ ==================== */
+  .glow-btn {
+    padding: 14px 36px;
+    border: 1px solid rgba(200, 180, 255, 0.6);
+    border-radius: 40px;
+    background: rgba(30, 20, 65, 0.6);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: clamp(0.88rem, 2.9vw, 1.05rem);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow:
+      0 0 26px rgba(150, 130, 255, 0.35),
+      inset 0 0 18px rgba(150, 130, 255, 0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, opacity 0.6s ease;
+    text-align: center;
+    line-height: 1.5;
+    max-width: min(560px, 88vw);
+  }
+  .glow-btn:hover,
+  .glow-btn:focus-visible {
+    background: rgba(55, 35, 110, 0.8);
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 46px rgba(180, 150, 255, 0.6),
+      inset 0 0 22px rgba(180, 150, 255, 0.22);
+    outline: none;
+  }
+  .glow-btn:active { transform: translateY(0) scale(0.98); }
+  .glow-btn:disabled { opacity: 0.4; cursor: default; }
+
+  /* ==================== INTRO ==================== */
+  .intro {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(2rem, 6vh, 4rem);
+    padding: 8vh 6vw;
+    text-align: center;
+    background: rgba(3, 4, 14, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: opacity 1.4s ease, visibility 0s linear 1.4s;
+  }
+  .intro.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .intro-text {
+    color: #f0eaff;
+    font-size: clamp(1.15rem, 4.4vw, 1.8rem);
+    font-weight: 300;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    max-width: 620px;
+    text-shadow:
+      0 0 24px rgba(190, 170, 255, 0.85),
+      0 0 60px rgba(140, 110, 240, 0.5);
+    animation: introFade 2.4s ease both;
+  }
+  .intro-text .accent {
+    display: block;
+    margin-top: 0.4em;
+    color: #ffffff;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    text-shadow:
+      0 0 22px rgba(220, 200, 255, 0.95),
+      0 0 50px rgba(160, 130, 255, 0.7);
+  }
+  @keyframes introFade {
+    0%   { opacity: 0; transform: translateY(14px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .intro-btn {
+    position: relative;
+    padding: 16px 44px;
+    border: 1px solid rgba(200, 180, 255, 0.65);
+    border-radius: 40px;
+    background: rgba(30, 20, 65, 0.55);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: clamp(1rem, 3.2vw, 1.15rem);
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow:
+      0 0 30px rgba(150, 130, 255, 0.35),
+      inset 0 0 20px rgba(150, 130, 255, 0.12);
+    transition: transform 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;
+    animation: introFade 2.4s 0.6s ease both;
+  }
+  .intro-btn:hover,
+  .intro-btn:focus-visible {
+    background: rgba(55, 35, 110, 0.75);
+    transform: translateY(-2px) scale(1.03);
+    box-shadow:
+      0 0 50px rgba(180, 150, 255, 0.6),
+      inset 0 0 24px rgba(180, 150, 255, 0.2);
+    outline: none;
+  }
+  .intro-btn:active { transform: translateY(0) scale(0.99); }
+
+  /* ==================== СЦЕНЫ ==================== */
+  .scene {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1rem, 3vh, 2rem);
+    padding: 6vh 6vw;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    pointer-events: none;
+  }
+  .scene.visible { opacity: 1; }
+
+  .scene img {
+    max-width: min(380px, 72vw);
+    max-height: 46vh;
+    width: auto;
+    height: auto;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow:
+      0 0 30px rgba(180, 160, 255, 0.45),
+      0 0 70px rgba(120, 100, 220, 0.30),
+      0 6px 30px rgba(0, 0, 0, 0.5);
+    display: block;
+  }
+
+  .scene p {
+    color: #f0eaff;
+    font-size: clamp(0.95rem, 3.2vw, 1.35rem);
+    font-weight: 300;
+    line-height: 1.7;
+    max-width: 640px;
+    text-shadow: 0 0 22px rgba(180, 160, 255, 0.7);
+    letter-spacing: 0.01em;
+  }
+
+  .scene-2 .signature {
+    display: block;
+    margin-top: 0.9em;
+    font-size: clamp(1.05rem, 3.6vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: #ffffff;
+    text-shadow:
+      0 0 20px rgba(200, 180, 255, 0.9),
+      0 0 40px rgba(160, 140, 255, 0.6);
+  }
+
+  .scene-3 {
+    justify-content: flex-start;
+    padding: 12vh 6vw 22vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(180, 160, 255, 0.4) transparent;
+  }
+  .scene-3.visible { pointer-events: auto; }
+  .scene-3::-webkit-scrollbar { width: 6px; }
+  .scene-3::-webkit-scrollbar-track { background: transparent; }
+  .scene-3::-webkit-scrollbar-thumb {
+    background: rgba(180, 160, 255, 0.35);
+    border-radius: 3px;
+  }
+
+  .poem {
+    color: #f0eaff;
+    font-size: clamp(0.95rem, 3.1vw, 1.25rem);
+    font-weight: 300;
+    line-height: 1.9;
+    max-width: 680px;
+    width: 100%;
+    text-shadow: 0 0 22px rgba(180, 160, 255, 0.55);
+    letter-spacing: 0.012em;
+    text-align: center;
+  }
+  .poem .stanza { display: block; }
+  .poem .line {
+    display: block;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 1.4s ease, transform 1.4s ease;
+    min-height: 1em;
+  }
+  .poem .line.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .poem .stanza-final .line.show {
+    color: #ffffff;
+    font-weight: 400;
+    text-shadow:
+      0 0 18px rgba(220, 200, 255, 0.95),
+      0 0 36px rgba(180, 150, 255, 0.7),
+      0 0 60px rgba(140, 110, 255, 0.45);
+  }
+
+  .fixed-bottom {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: 28px;
+    display: flex;
+    justify-content: center;
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+    padding: 0 6vw;
+  }
+  .fixed-bottom.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .scene-choice.visible { pointer-events: auto; }
+  .scene-choice {
+    gap: clamp(1.2rem, 3.5vh, 2rem);
+    padding: 8vh 6vw;
+  }
+
+  .scene-final-poem.visible { pointer-events: auto; }
+  .scene-final-poem {
+    padding: 8vh 6vw 22vh;
+  }
+
+  .scene-response.visible { pointer-events: auto; }
+  .scene-response { padding: 8vh 6vw; }
+
+  .response-text {
+    color: #ffffff;
+    font-size: clamp(1.1rem, 4vw, 1.7rem);
+    font-weight: 300;
+    line-height: 1.8;
+    text-align: center;
+    max-width: 640px;
+    letter-spacing: 0.02em;
+    text-shadow:
+      0 0 24px rgba(220, 200, 255, 0.95),
+      0 0 50px rgba(180, 150, 255, 0.7),
+      0 0 90px rgba(140, 110, 255, 0.5);
+    opacity: 0;
+    transition: opacity 3s ease;
+  }
+  .response-text.show { opacity: 1; }
+
+  .flash {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    margin: -30px 0 0 -30px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+      #ffffff 0%,
+      #ffffff 12%,
+      rgba(220, 230, 255, 0.95) 28%,
+      rgba(170, 190, 255, 0.55) 50%,
+      transparent 75%);
+    filter: blur(2px);
+    opacity: 0;
+    transform: scale(0);
+    z-index: 10;
+    pointer-events: none;
+    will-change: transform, opacity, filter;
+  }
+  .flash.active {
+    animation: starFlash 1.5s cubic-bezier(0.22, 0.6, 0.3, 1) forwards;
+  }
+  @keyframes starFlash {
+    0%   { opacity: 0;    transform: scale(0);   filter: blur(2px) brightness(1); }
+    12%  { opacity: 1;    transform: scale(1.6); filter: blur(1px) brightness(3.5); }
+    32%  { opacity: 1;    transform: scale(3.2); filter: blur(4px) brightness(2.4); }
+    60%  { opacity: 0.85; transform: scale(6.5); filter: blur(10px) brightness(1.4); }
+    100% { opacity: 0;    transform: scale(11);  filter: blur(22px) brightness(1); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="moon-glow"></div>
+  <canvas id="stars"></canvas>
+
+  <!-- Приветственный экран -->
+  <div class="intro" id="intro">
+    <div class="intro-text">
+      Нажимая сюда,
+      <span class="accent">Ты сейчас впускаешь меня в своё сердце</span>
+    </div>
+    <button class="intro-btn" id="introBtn">Впустить</button>
+  </div>
+
+  <!-- Сцена 1 -->
+  <div class="scene scene-1">
+    <img id="img1" alt="">
+    <p>если твои глаза потеряют свет,<br>и ты будешь искать хотя бы малейший лучик...</p>
+  </div>
+
+  <div class="darkness"></div>
+  <div class="flash"></div>
+
+  <!-- Сцена 2 -->
+  <div class="scene scene-2">
+    <img id="img2" alt="">
+    <p>
+      то я стану для тебя всем светом,<br>который могу излучать
+      <span class="signature">Моя истинная пара</span>
+    </p>
+  </div>
+
+  <!-- Сцена 3: основной стих -->
+  <div class="scene scene-3">
+    <div class="poem" id="poem">
+Причина пера в руке моей
+Такая же как у тела, в комнате твоей
+Услышал я твои слова
+И сердце не выдержив огня
+
+Взлетело в небо, на карте лишь поставив знак
+Туда, туда лететь приказываю я
+Моя любимая не справляется одна
+Я должен щас быть рядом
+Я буду, в тайне говорю я про себя
+
+Я врал, скрывал, всё осталось в тайне
+И стих, прочтёшь ты лишь сейчас
+Когда уже, увидела меня
+Теперь я рядом, отныне, и навсегда
+
+А всё что было в голове твоей
+Своей рукой, я нежно гладя тебя по голове
+Смахну, и поцелую
+В глаза уверенно и нежно посмотрев
+
+Скажу - запомни, я искренне тебя люблю
+Мы рядом, и я тебя не отпущу
+Ты можешь думать, что угодно
+И говорить, любые мысли
+
+Но все они, как Галлеон о скалы
+Моей любви, ударяться и содрогнуться
+Утонув на веки, в звёздной темноте воспоминаний
+За жизнь, которую набрали
+И нашими руками, в стихах
+С тобой мы описали
+    </div>
+  </div>
+
+  <!-- Кнопка "Нажми сюда, чтобы увидеть" -->
+  <div class="fixed-bottom" id="showPhotosWrap">
+    <button class="glow-btn" id="showPhotosBtn">Нажми сюда, чтобы увидеть</button>
+  </div>
+
+  <!-- Сцена 4: череда из 3 фото -->
+  <div class="scene scene-photos">
+    <img id="seqPhoto" alt="">
+  </div>
+
+  <!-- Сцена 5: две кнопки выбора -->
+  <div class="scene scene-choice">
+    <button class="glow-btn" id="loveBtn">
+      Нажми сюда, и прочти продолжение стиха своим голосом,<br>если ты меня любишь
+    </button>
+    <button class="glow-btn" id="notLoveBtn">
+      Нажми сюда, и прочти продолжение стиха своим голосом,<br>если ты меня не любишь
+    </button>
+  </div>
+
+  <!-- Сцена 6: финальный 4-строчный стих -->
+  <div class="scene scene-final-poem">
+    <div class="poem" id="finalPoem"></div>
+  </div>
+
+  <!-- Кнопка "Нажми, чтобы увидеть ответ" -->
+  <div class="fixed-bottom" id="showResponseWrap">
+    <button class="glow-btn" id="showResponseBtn">Нажми, чтобы увидеть ответ</button>
+  </div>
+
+  <!-- Сцена 7: финальный ответ -->
+  <div class="scene scene-response">
+    <div class="response-text" id="responseText"></div>
+  </div>
+
+<script>
+/* ============================================
+   👇 ССЫЛКИ НА ФОТО (5 штук)
+   ============================================ */
+const PHOTO_1 = "Mask group (1).png";
+const PHOTO_2 = "Mask group (2).png";
+const PHOTO_3 = "1792168703729-01a14593-f9bc-7be8-947b-2e6fc1fa8820.jpeg";
+const PHOTO_4 = "1792168667689-01a14593-70b8-730a-8a28-e9ddd2975b02.jpeg";
+const PHOTO_5 = "1792168547151-01a14591-b4c2-72af-9c54-37d91bb096c2.jpeg";
+
+/* ============================================
+   👇 ССЫЛКА НА MP3
+   ============================================ */
+const MUSIC_URL = "Alexander_Nakarada_-_Nomadic_Dawn_73158386.mp3";
+const MUSIC_START_AT = 35;
+const MUSIC_VOLUME = 0.35;
+
+document.getElementById('img1').src = PHOTO_1;
+document.getElementById('img2').src = PHOTO_2;
+
+[PHOTO_1, PHOTO_2, PHOTO_3, PHOTO_4, PHOTO_5].forEach((src) => {
+  const im = new Image();
+  im.src = src;
+});
+
+/* ============================================
+   МУЗЫКА
+   ============================================ */
+const music = new Audio();
+music.src = MUSIC_URL;
+music.loop = true;
+music.preload = "auto";
+music.volume = MUSIC_VOLUME;
+
+function startMusic() {
+  const seekAndPlay = () => {
+    try { music.currentTime = MUSIC_START_AT; } catch (e) {}
+    music.play().catch(() => {});
+  };
+  if (music.readyState >= 1) {
+    seekAndPlay();
+  } else {
+    music.addEventListener('loadedmetadata', seekAndPlay, { once: true });
+    try { music.load(); } catch (e) {}
+  }
+}
+
+function fadeMusicOut(durationSec) {
+  if (!music || music.paused) return;
+  const startVol = music.volume;
+  const startTime = performance.now();
+  const dur = durationSec * 1000;
+  const tick = () => {
+    const elapsed = performance.now() - startTime;
+    const t = Math.min(elapsed / dur, 1);
+    music.volume = startVol * (1 - t);
+    if (t < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      try { music.pause(); } catch (e) {}
+    }
+  };
+  requestAnimationFrame(tick);
+}
+
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/* ============================================
+   РАЗБИВАЕМ ОСНОВНОЙ СТИХ НА СТРОКИ
+   ============================================ */
+(function buildPoemLines() {
+  const poem = document.getElementById('poem');
+  const rawText = poem.textContent.replace(/^\n+/, '').replace(/\n+$/, '');
+  const stanzas = rawText.split(/\n\s*\n/);
+
+  poem.innerHTML = '';
+
+  stanzas.forEach((stanza, sIdx) => {
+    const stanzaEl = document.createElement('div');
+    stanzaEl.className = 'stanza' + (sIdx === stanzas.length - 1 ? ' stanza-final' : '');
+
+    const lines = stanza.split('\n');
+    lines.forEach((line) => {
+      const lineEl = document.createElement('span');
+      lineEl.className = 'line';
+      lineEl.textContent = line.trim() === '' ? '\u00A0' : line.trim();
+      stanzaEl.appendChild(lineEl);
+    });
+
+    poem.appendChild(stanzaEl);
+
+    if (sIdx < stanzas.length - 1) {
+      const spacer = document.createElement('span');
+      spacer.className = 'line';
+      spacer.innerHTML = '&nbsp;';
+      poem.appendChild(spacer);
+    }
+  });
+
+  window.__poemLines = Array.from(poem.querySelectorAll('.line'));
+})();
+
+/* ============================================
+   ОСНОВНАЯ ЛОГИКА
+   ============================================ */
+(() => {
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  const moon = document.querySelector('.moon-glow');
+  const darkness = document.querySelector('.darkness');
+  const scene1 = document.querySelector('.scene-1');
+  const scene2 = document.querySelector('.scene-2');
+  const scene3 = document.querySelector('.scene-3');
+  const scenePhotos = document.querySelector('.scene-photos');
+  const sceneChoice = document.querySelector('.scene-choice');
+  const sceneFinalPoem = document.querySelector('.scene-final-poem');
+  const sceneResponse = document.querySelector('.scene-response');
+  const flash = document.querySelector('.flash');
+
+  const showPhotosWrap = document.getElementById('showPhotosWrap');
+  const showPhotosBtn = document.getElementById('showPhotosBtn');
+  const loveBtn = document.getElementById('loveBtn');
+  const notLoveBtn = document.getElementById('notLoveBtn');
+  const seqPhoto = document.getElementById('seqPhoto');
+  const finalPoem = document.getElementById('finalPoem');
+  const responseText = document.getElementById('responseText');
+
+  const showResponseWrap = document.getElementById('showResponseWrap');
+  const showResponseBtn = document.getElementById('showResponseBtn');
+
+  let width, height, dpr;
+  let stars = [];
+  let shootingStars = [];
+  let lastShooting = 0;
+
+  // Куда идём после нажатия кнопки ответа
+  let pendingResponseLines = null;
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    createStars();
+  }
+
+  function createStars() {
+    const area = width * height;
+    let count = Math.floor(area / 3500);
+    count = Math.max(120, Math.min(count, 700));
+
+    stars = [];
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 1.6 + 0.3,
+        baseAlpha: Math.random() * 0.5 + 0.4,
+        alpha: 0,
+        twinkleSpeed: Math.random() * 0.02 + 0.005,
+        phase: Math.random() * Math.PI * 2,
+        driftX: (Math.random() - 0.5) * 0.05,
+        driftY: (Math.random() - 0.5) * 0.05,
+        hue: pickHue()
+      });
+    }
+  }
+
+  function pickHue() {
+    const r = Math.random();
+    if (r < 0.7) return { r: 255, g: 255, b: 255 };
+    if (r < 0.85) return { r: 255, g: 240, b: 220 };
+    return { r: 210, g: 225, b: 255 };
+  }
+
+  function spawnShootingStar() {
+    const startX = Math.random() * width * 0.9 - width * 0.1;
+    const startY = Math.random() * height * 0.5 - height * 0.15;
+    const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.5;
+    const speed = 5 + Math.random() * 6;
+    shootingStars.push({
+      x: startX, y: startY,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 1,
+      length: 100 + Math.random() * 140,
+      decay: 0.008 + Math.random() * 0.006,
+      thickness: 1.4 + Math.random() * 1.2
+    });
+  }
+
+  function spawnBurst() {
+    const count = 1 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < count; i++) {
+      setTimeout(spawnShootingStar, i * (80 + Math.random() * 200));
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+
+    for (let i = 0; i < stars.length; i++) {
+      const s = stars[i];
+      s.phase += s.twinkleSpeed;
+      const twinkle = (Math.sin(s.phase) + 1) / 2;
+      s.alpha = s.baseAlpha * (0.35 + twinkle * 0.65);
+
+      s.x += s.driftX;
+      s.y += s.driftY;
+      if (s.x < 0) s.x = width;
+      if (s.x > width) s.x = 0;
+      if (s.y < 0) s.y = height;
+      if (s.y > height) s.y = 0;
+
+      const glowRadius = s.radius * 6;
+      const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowRadius);
+      grad.addColorStop(0, `rgba(${s.hue.r},${s.hue.g},${s.hue.b},${s.alpha})`);
+      grad.addColorStop(1, `rgba(${s.hue.r},${s.hue.g},${s.hue.b},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, glowRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = `rgba(${s.hue.r},${s.hue.g},${s.hue.b},${Math.min(1, s.alpha + 0.15)})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    const now = performance.now();
+    if (now - lastShooting > 800 + Math.random() * 1800) {
+      spawnBurst();
+      lastShooting = now;
+    }
+
+    for (let i = shootingStars.length - 1; i >= 0; i--) {
+      const ss = shootingStars[i];
+      ss.x += ss.vx;
+      ss.y += ss.vy;
+      ss.life -= ss.decay;
+
+      if (ss.life <= 0 || ss.x > width + 200 || ss.y > height + 200) {
+        shootingStars.splice(i, 1);
+        continue;
+      }
+
+      const mag = Math.hypot(ss.vx, ss.vy);
+      const tailX = ss.x - ss.vx / mag * ss.length;
+      const tailY = ss.y - ss.vy / mag * ss.length;
+
+      const grad = ctx.createLinearGradient(ss.x, ss.y, tailX, tailY);
+      grad.addColorStop(0, `rgba(255,255,255,${ss.life})`);
+      grad.addColorStop(0.4, `rgba(180,200,255,${ss.life * 0.6})`);
+      grad.addColorStop(1, 'rgba(180,200,255,0)');
+
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = ss.thickness;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(ss.x, ss.y);
+      ctx.lineTo(tailX, tailY);
+      ctx.stroke();
+
+      const headGlow = ctx.createRadialGradient(ss.x, ss.y, 0, ss.x, ss.y, 8);
+      headGlow.addColorStop(0, `rgba(255,255,255,${ss.life})`);
+      headGlow.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = headGlow;
+      ctx.beginPath();
+      ctx.arc(ss.x, ss.y, 8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resize, 150);
+  });
+  window.addEventListener('orientationchange', () => setTimeout(resize, 200));
+
+  resize();
+  animate();
+
+  /* ---------- ХЕЛПЕРЫ ---------- */
+  function fadeToDark(duration) {
+    canvas.style.transition = `opacity ${duration}s ease`;
+    canvas.style.opacity = '0';
+    moon.style.transition = `opacity ${duration}s ease`;
+    moon.style.opacity = '0';
+    darkness.style.transition = `opacity ${duration}s ease`;
+    darkness.classList.add('on');
+  }
+
+  function fadeFromDark(duration) {
+    canvas.style.transition = `opacity ${duration}s ease`;
+    canvas.style.opacity = '1';
+    moon.style.transition = `opacity ${duration}s ease`;
+    moon.style.opacity = '0.9';
+    darkness.style.transition = `opacity ${duration}s ease`;
+    darkness.classList.remove('on');
+  }
+
+  function hideScene(scene, duration) {
+    scene.style.transition = `opacity ${duration}s ease`;
+    scene.style.opacity = '0';
+    scene.style.pointerEvents = 'none';
+  }
+
+  function triggerFlash() {
+    flash.classList.remove('active');
+    void flash.offsetWidth;
+    flash.classList.add('active');
+  }
+
+  /* ---------- ТАЙМЛАЙН ---------- */
+  function startTimeline() {
+    setTimeout(() => scene1.classList.add('visible'), 2000);
+
+    setTimeout(() => {
+      hideScene(scene1, 5);
+      fadeToDark(5);
+    }, 7000);
+
+    setTimeout(triggerFlash, 12000);
+
+    setTimeout(() => {
+      fadeFromDark(2.4);
+      scene2.classList.add('visible');
+    }, 13000);
+
+    setTimeout(() => {
+      hideScene(scene2, 5);
+      fadeToDark(5);
+    }, 21000);
+
+    setTimeout(triggerFlash, 26000);
+
+    setTimeout(() => {
+      fadeFromDark(2.4);
+      scene3.scrollTop = 0;
+      scene3.classList.add('visible');
+
+      const lines = window.__poemLines || [];
+      lines.forEach((line, i) => {
+        setTimeout(() => line.classList.add('show'), i * 2000);
+      });
+
+      const showBtnDelay = (lines.length - 1) * 2000 + 3500;
+      setTimeout(() => {
+        showPhotosWrap.classList.add('visible');
+      }, showBtnDelay);
+    }, 27000);
+  }
+
+  /* ---------- Кнопка "Впустить" ---------- */
+  const intro = document.getElementById('intro');
+  const introBtn = document.getElementById('introBtn');
+
+  introBtn.addEventListener('click', () => {
+    startMusic();
+    intro.classList.add('hidden');
+    setTimeout(startTimeline, 800);
+  });
+
+  /* ---------- Череда из 3 фото ---------- */
+  async function showPhotoSequence() {
+    const photos = [PHOTO_3, PHOTO_4, PHOTO_5];
+    for (const src of photos) {
+      await new Promise((res) => {
+        const im = new Image();
+        im.onload = im.onerror = () => res();
+        im.src = src;
+      });
+      seqPhoto.src = src;
+      await wait(80);
+      scenePhotos.classList.add('visible');
+      await wait(3800);
+      scenePhotos.classList.remove('visible');
+      await wait(1400);
+    }
+  }
+
+  /* ---------- Клик "Нажми сюда, чтобы увидеть" ---------- */
+  showPhotosBtn.addEventListener('click', async () => {
+    showPhotosWrap.classList.remove('visible');
+    hideScene(scene3, 1.4);
+
+    await wait(1400);
+    await showPhotoSequence();
+
+    fadeToDark(5);
+    await wait(5000);
+
+    triggerFlash();
+    await wait(1100);
+
+    fadeFromDark(2.4);
+    await wait(2400);
+
+    sceneChoice.classList.add('visible');
+  });
+
+  /* ---------- Показ 4-строчного финального стиха ---------- */
+  function showFinalPoem(lines, onDone) {
+    finalPoem.innerHTML = '';
+    finalPoem.style.transition = '';
+    finalPoem.style.opacity = '1';
+
+    lines.forEach((text) => {
+      const span = document.createElement('span');
+      span.className = 'line';
+      span.textContent = text;
+      finalPoem.appendChild(span);
+    });
+
+    const spans = Array.from(finalPoem.querySelectorAll('.line'));
+    spans.forEach((s, i) => {
+      setTimeout(() => s.classList.add('show'), i * 2000);
+    });
+
+    const totalTime = (spans.length - 1) * 2000 + 3000;
+    if (onDone) setTimeout(onDone, totalTime);
+  }
+
+  /* ---------- Показ ответа ---------- */
+  function showResponse(lines) {
+    responseText.innerHTML = lines.join('<br>');
+    sceneResponse.classList.add('visible');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        responseText.classList.add('show');
+      });
+    });
+  }
+
+  /* ---------- Обработка выбора "люблю / не люблю" ---------- */
+  function handleChoice(poemLines, responseLines) {
+    loveBtn.disabled = true;
+    notLoveBtn.disabled = true;
+    sceneChoice.classList.remove('visible');
+    sceneChoice.style.pointerEvents = 'none';
+
+    // Запоминаем строки ответа — покажем после клика по кнопке
+    pendingResponseLines = responseLines;
+
+    setTimeout(() => {
+      sceneFinalPoem.classList.add('visible');
+
+      showFinalPoem(poemLines, () => {
+        // После последней строки — показываем кнопку "Нажми, чтобы увидеть ответ"
+        showResponseWrap.classList.add('visible');
+      });
+    }, 1200);
+  }
+
+  loveBtn.addEventListener('click', () => {
+    handleChoice(
+      [
+        'И я возьму, твоё перо',
+        'И напишу последний строф',
+        'О том, что искренне тебя люблю',
+        'И быть твоей, навсегда хочу'
+      ],
+      [
+        'А я искренне люблю тебя',
+        'И будь моей ты, навсегда'
+      ]
+    );
+  });
+
+  notLoveBtn.addEventListener('click', () => {
+    handleChoice(
+      [
+        'И я возьму, твоё перо',
+        'И напишу, последний строф',
+        'О том, что искренне тебя я не люблю',
+        'И быть твоей, низачто, я не хочу'
+      ],
+      [
+        'А я искренне люблю тебя',
+        'И знаю, что ты мне соврала'
+      ]
+    );
+  });
+
+  /* ---------- Клик "Нажми, чтобы увидеть ответ" ---------- */
+  showResponseBtn.addEventListener('click', () => {
+    showResponseWrap.classList.remove('visible');
+
+    // 1) Растворяем финальный стих (3 с)
+    finalPoem.style.transition = 'opacity 3s ease';
+    finalPoem.style.opacity = '0';
+
+    // 2) Одновременно утихает музыка (6 с)
+    fadeMusicOut(6);
+
+    // 3) После того как всё утихло — показываем финальный ответ
+    setTimeout(() => {
+      sceneFinalPoem.classList.remove('visible');
+      if (pendingResponseLines) {
+        showResponse(pendingResponseLines);
+      }
+    }, 3500);
+  });
+
+})();
+</script>
+</body>
+</html>
